@@ -66,5 +66,22 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+	<!--
+		Permission prompts.
+
+		iOS terminates the process outright when an app accesses the camera, the
+		photo library or Face ID without a usage description here. These are not
+		optional niceties: omitting one turns the feature into an immediate crash
+		rather than a permission request.
+
+		Each string is shown verbatim in the system prompt, so they say what the
+		app does with the access and why.
+	-->
+	<key>NSCameraUsageDescription</key>
+	<string>Utaha Authenticator uses the camera only to scan authenticator QR codes. Nothing is recorded and no image leaves your device.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Utaha Authenticator reads a picture you choose so it can find an authenticator QR code in it. Only the picture you pick is opened.</string>
+	<key>NSFaceIDUsageDescription</key>
+	<string>Utaha Authenticator uses Face ID to unlock the app and show your codes.</string>
 </dict>
 </plist>

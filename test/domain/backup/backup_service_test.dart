@@ -6,6 +6,7 @@ import 'package:utaha_authenticator/core/errors/failures.dart';
 import 'package:utaha_authenticator/core/utils/base32.dart';
 import 'package:utaha_authenticator/data/repositories/in_memory_account_repository.dart';
 import 'package:utaha_authenticator/data/secure/in_memory_secret_repository.dart';
+import 'package:utaha_authenticator/domain/backup/backup_format.dart';
 import 'package:utaha_authenticator/domain/backup/backup_payload.dart';
 import 'package:utaha_authenticator/domain/backup/backup_service.dart';
 import 'package:utaha_authenticator/domain/models/account.dart';
@@ -14,6 +15,22 @@ import 'package:utaha_authenticator/domain/otp/otp_type.dart';
 import 'package:utaha_authenticator/domain/services/account_service.dart';
 
 const String _secret = 'JBSWY3DPEHPK3PXP';
+
+/// Cheap Argon2id parameters for tests.
+///
+/// The production cost is deliberately high (3 iterations over 64 MiB), which is
+/// roughly 0.6s per derivation on an M-series Mac and slower on a phone. These
+/// tests round-trip backups many times, so using the real cost would spend
+/// almost all of their runtime in the KDF and trip the test timeout.
+///
+/// The parameters are recorded in every file, so a file written with these still
+/// decodes — which is exactly why the format stores them.
+const Argon2idParameters _testKdf = Argon2idParameters(
+  iterations: 1,
+  memory: 64,
+  parallelism: 1,
+  hashLength: 32,
+);
 
 void main() {
   late InMemoryAccountRepository accounts;
@@ -25,7 +42,11 @@ void main() {
     accounts = InMemoryAccountRepository();
     secrets = InMemorySecretRepository();
     accountService = AccountService(accounts: accounts, secrets: secrets);
-    backup = BackupService(accounts: accounts, secrets: secrets);
+    backup = BackupService(
+      accounts: accounts,
+      secrets: secrets,
+      parameters: _testKdf,
+    );
   });
 
   /// Adds a few accounts to back up.

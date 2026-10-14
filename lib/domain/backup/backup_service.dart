@@ -60,10 +60,20 @@ class RestoreReport {
 /// handles plaintext secrets in memory is confined to one file.
 class BackupService {
   /// Creates a service over the two stores.
-  new({required this._accounts, required this._secrets});
+  ///
+  /// [parameters] defaults to the production Argon2id cost. Tests override it
+  /// with something cheap: the defaults are deliberately expensive, and a test
+  /// that round-trips a backup a dozen times would otherwise spend most of its
+  /// runtime in the KDF and hit the test timeout.
+  new({
+    required this._accounts,
+    required this._secrets,
+    Argon2idParameters? parameters,
+  }) : _parameters = parameters ?? BackupFormat.argon2id;
 
   final AccountRepository _accounts;
   final SecretRepository _secrets;
+  final Argon2idParameters _parameters;
 
   /// Builds an encrypted `.utaha` file containing every account.
   ///
@@ -108,6 +118,7 @@ class BackupService {
         return await BackupCodec.encode(
           plaintext: plaintext,
           password: password,
+          parameters: _parameters,
         );
       } finally {
         // The plaintext holds every secret in the clear.
@@ -229,6 +240,6 @@ class BackupService {
     return lines.join('\n');
   }
 
-  /// The current Argon2id parameters, for display in the UI.
-  static Argon2idParameters get parameters => BackupFormat.argon2id;
+  /// The Argon2id parameters this instance uses.
+  Argon2idParameters get parameters => _parameters;
 }
