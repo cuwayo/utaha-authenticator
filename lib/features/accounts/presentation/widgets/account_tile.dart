@@ -14,7 +14,7 @@ import 'package:utaha_authenticator/l10n/app_localizations.dart';
 ///
 /// Tapping the row copies the code; a long press opens the account's menu. Both
 /// are exposed as semantics actions so the row is usable with a screen reader.
-class AccountTile extends StatelessWidget {
+class AccountTile extends StatefulWidget {
   /// Creates an account tile.
   const new({
     required this.account,
@@ -53,11 +53,54 @@ class AccountTile extends StatelessWidget {
   final VoidCallback? onAdvanceCounter;
 
   @override
+  State<AccountTile> createState() => _AccountTileState();
+}
+
+class _AccountTileState extends State<AccountTile> {
+  /// Whether the code has been revealed by a tap.
+  ///
+  /// Only meaningful when [AccountTile.tapToReveal] is on. Kept per tile, so
+  /// revealing one account does not reveal the others.
+  bool _revealed = false;
+
+  /// Whether the code should currently be shown in the clear.
+  bool get _showCode => !widget.tapToReveal || _revealed;
+
+  @override
+  void didUpdateWidget(AccountTile oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // Hide the code again when it changes.
+    //
+    // The reveal is scoped to a single code: once the code rolls over there is
+    // a new secret on screen, and leaving it uncovered would silently undo the
+    // setting the user turned on. Comparing the code string rather than a timer
+    // means this works for HOTP too, where there is no period.
+    if (oldWidget.code?.code != widget.code?.code) {
+      _revealed = false;
+    }
+  }
+
+  /// Handles a tap on the row.
+  ///
+  /// With tap-to-reveal on, the first tap uncovers the code and only a second
+  /// tap copies it — otherwise the setting would be defeated by the very
+  /// gesture it asks for.
+  void _handleTap() {
+    if (widget.code == null) return;
+    if (widget.tapToReveal && !_revealed) {
+      setState(() => _revealed = true);
+      return;
+    }
+    widget.onCopy();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final scheme = theme.colorScheme;
     final l10n = AppLocalizations.of(context);
 
+    final code = widget.code;
     final hasCode = code != null;
     final isExpiring = code?.isExpiringSoon ?? false;
 
@@ -68,22 +111,22 @@ class AccountTile extends StatelessWidget {
         // announcements, which is unusable when moving through a list.
         label: _semanticLabel(l10n),
         button: hasCode,
-        onTap: hasCode ? onCopy : null,
-        onLongPress: onLongPress,
+        onTap: hasCode ? _handleTap : null,
+        onLongPress: widget.onLongPress,
         excludeSemantics: true,
         child: InkWell(
-          onTap: hasCode ? onCopy : null,
-          onLongPress: onLongPress,
+          onTap: hasCode ? _handleTap : null,
+          onLongPress: widget.onLongPress,
           child: Padding(
             padding: EdgeInsets.symmetric(
               horizontal: 16,
-              vertical: compact ? 8 : 12,
+              vertical: widget.compact ? 8 : 12,
             ),
             child: Row(
               children: <Widget>[
                 IssuerAvatar(
-                  label: account.issuer ?? account.accountName,
-                  size: compact ? 32 : 40,
+                  label: widget.account.issuer ?? widget.account.accountName,
+                  size: widget.compact ? 32 : 40,
                 ),
                 const SizedBox(width: 12),
                 Expanded(
@@ -92,16 +135,16 @@ class AccountTile extends StatelessWidget {
                     mainAxisSize: MainAxisSize.min,
                     children: <Widget>[
                       Text(
-                        account.displayTitle,
+                        widget.account.displayTitle,
                         style: theme.textTheme.titleMedium?.copyWith(
                           fontWeight: FontWeight.w600,
                         ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
-                      if (account.displaySubtitle.isNotEmpty)
+                      if (widget.account.displaySubtitle.isNotEmpty)
                         Text(
-                          account.displaySubtitle,
+                          widget.account.displaySubtitle,
                           style: theme.textTheme.bodySmall?.copyWith(
                             color: scheme.onSurfaceVariant,
                           ),
@@ -111,13 +154,16 @@ class AccountTile extends StatelessWidget {
                       const SizedBox(height: 4),
                       if (hasCode)
                         _CodeText(
-                          code: code!.code,
-                          grouping: grouping,
-                          tapToReveal: tapToReveal,
-                          compact: compact,
+                          code: code.code,
+                          grouping: widget.grouping,
+                          // The digits are passed only when they are meant to be
+                          // visible. Masking has to happen here rather than in
+                          // the widget's styling: a blurred or obscured Text
+                          // still holds the real string, and a screen reader
+                          // would happily read it out.
+                          visible: _showCode,
+                          compact: widget.compact,
                           isExpiring: isExpiring,
-                          onReveal: onCopy,
-                          semanticLabel: l10n.copyCodeTooltip,
                         )
                       else
                         Text(
@@ -131,10 +177,10 @@ class AccountTile extends StatelessWidget {
                 ),
                 const SizedBox(width: 8),
                 _Trailing(
-                  account: account,
+                  account: widget.account,
                   code: code,
-                  onAdvanceCounter: onAdvanceCounter,
-                  onCopy: onCopy,
+                  onAdvanceCounter: widget.onAdvanceCounter,
+                  onCopy: widget.onCopy,
                 ),
               ],
             ),
@@ -150,17 +196,19 @@ class AccountTile extends StatelessWidget {
   /// intelligible when spoken — "one two three" rather than "one hundred
   /// twenty-three".
   String _semanticLabel(AppLocalizations l10n) {
-    final parts = <String>[account.displayTitle];
-    if (account.displaySubtitle.isNotEmpty) {
-      parts.add(account.displaySubtitle);
+    final parts = <String>[widget.account.displayTitle];
+    if (widget.account.displaySubtitle.isNotEmpty) {
+      parts.add(widget.account.displaySubtitle);
     }
-    final current = code;
+    final current = widget.code;
     if (current == null) {
       parts.add(l10n.accountMissingSecret);
-    } else if (tapToReveal) {
+    } else if (!_showCode) {
+      // The first tap reveals rather than copies, so the hint must say so —
+      // announcing "copy code" would be a lie about what the gesture does.
       parts
         ..add(l10n.codeHidden)
-        ..add(l10n.copyCodeTooltip);
+        ..add(l10n.revealCodeHint);
     } else {
       parts.add(current.code.split('').join(' '));
       if (current.secondsRemaining != null) {
@@ -171,25 +219,30 @@ class AccountTile extends StatelessWidget {
   }
 }
 
-/// The code itself, optionally masked.
+/// The code itself, masked until revealed when tap-to-reveal is on.
 class _CodeText extends StatelessWidget {
   const new({
     required this.code,
     required this.grouping,
-    required this.tapToReveal,
+    required this.visible,
     required this.compact,
     required this.isExpiring,
-    required this.onReveal,
-    required this.semanticLabel,
   });
 
+  /// The code digits. Only rendered when [visible] is true.
   final String code;
+
+  /// How the digits should be grouped for display.
   final CodeGrouping grouping;
-  final bool tapToReveal;
+
+  /// Whether the digits may be shown.
+  final bool visible;
+
+  /// Whether to use the smaller type size.
   final bool compact;
+
+  /// Whether the code is in its final seconds.
   final bool isExpiring;
-  final VoidCallback onReveal;
-  final String semanticLabel;
 
   @override
   Widget build(BuildContext context) {
@@ -201,41 +254,40 @@ class _CodeText extends StatelessWidget {
       compact: compact,
     ).copyWith(color: isExpiring ? scheme.error : scheme.onSurface);
 
-    if (!tapToReveal) {
-      return Text(
-        grouping.format(code),
-        style: style,
-        // The label reads the digits one at a time, which is what makes a code
-        // intelligible when spoken.
-        semanticsLabel: _spokenDigits(code),
+    if (!visible) {
+      // One placeholder character per digit, so the row is the same width
+      // hidden and revealed and the layout does not jump on the first tap.
+      // The code's length is not a secret — it is visible in the account's own
+      // settings — so mirroring it leaks nothing.
+      //
+      // The real digits are not rendered at all: not blurred, not coloured to
+      // match the background, not clipped. Anything that still holds the string
+      // can be read by a screen reader or recovered from a screenshot, which
+      // would defeat the setting entirely.
+      return Semantics(
+        label: AppLocalizations.of(context).codeHidden,
+        excludeSemantics: true,
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            Text('•' * code.length, style: style),
+            const SizedBox(width: 8),
+            Icon(
+              Icons.visibility_outlined,
+              size: 18,
+              color: scheme.onSurfaceVariant,
+            ),
+          ],
+        ),
       );
     }
 
-    return Semantics(
-      button: true,
-      label: semanticLabel,
-      excludeSemantics: true,
-      child: InkWell(
-        onTap: onReveal,
-        borderRadius: BorderRadius.circular(8),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 2, horizontal: 4),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              Text(grouping.format(code), style: style),
-              const SizedBox(width: 8),
-              // A blur rather than asterisks: it reads as "hidden" instead of
-              // "these are the digits".
-              Icon(
-                Icons.visibility_off_outlined,
-                size: 18,
-                color: scheme.onSurfaceVariant,
-              ),
-            ],
-          ),
-        ),
-      ),
+    return Text(
+      grouping.format(code),
+      style: style,
+      // The label reads the digits one at a time, which is what makes a code
+      // intelligible when spoken.
+      semanticsLabel: _spokenDigits(code),
     );
   }
 

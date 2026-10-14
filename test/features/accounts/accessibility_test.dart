@@ -263,6 +263,169 @@ void main() {
     });
   });
 
+  group('tap-to-reveal actually hides the code', () {
+    // Regression tests for a bug where the setting did nothing: the tile
+    // rendered the real digits and merely added a "hidden" icon beside them.
+    // The earlier test only checked the *announcement*, so it passed while the
+    // code was plainly visible on screen.
+    final account = Account(
+      id: 'a1',
+      accountName: 'ada@example.com',
+      issuer: 'GitHub',
+    );
+
+    AccountCode codeOf(String value) => AccountCode(
+      code: value,
+      secondsRemaining: 20,
+      progress: 0.3,
+    );
+
+    testWidgets('the digits are not rendered while hidden', (tester) async {
+      await tester.pumpWidget(
+        hostTile(
+          account: account,
+          code: codeOf('123456'),
+          tapToReveal: true,
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      // Neither the raw nor the grouped form may appear anywhere in the tree.
+      expect(find.text('123456'), findsNothing);
+      expect(find.text('123 456'), findsNothing);
+      expect(find.textContaining('123'), findsNothing);
+    });
+
+    testWidgets('a placeholder is shown instead', (tester) async {
+      await tester.pumpWidget(
+        hostTile(
+          account: account,
+          code: codeOf('123456'),
+          tapToReveal: true,
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.textContaining('•'), findsOneWidget);
+    });
+
+    testWidgets('the placeholder matches the digit count', (tester) async {
+      // So the row does not change width when revealed.
+      for (final entry in <String, int>{'123456': 6, '1234567': 7, '12345678': 8}.entries) {
+        await tester.pumpWidget(
+          hostTile(
+            account: account,
+            code: codeOf(entry.key),
+            tapToReveal: true,
+          ),
+        );
+        await tester.pumpAndSettle();
+        expect(
+          find.text('•' * entry.value),
+          findsOneWidget,
+          reason: '${entry.value} digits',
+        );
+      }
+    });
+
+    testWidgets('tapping once reveals without copying', (tester) async {
+      var copied = 0;
+      await tester.pumpWidget(
+        hostTile(
+          account: account,
+          code: codeOf('123456'),
+          tapToReveal: true,
+          onCopy: () => copied++,
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.byType(AccountTile));
+      await tester.pumpAndSettle();
+
+      expect(find.text('123 456'), findsOneWidget);
+      expect(copied, 0, reason: 'the first tap reveals, it does not copy');
+    });
+
+    testWidgets('tapping again copies', (tester) async {
+      var copied = 0;
+      await tester.pumpWidget(
+        hostTile(
+          account: account,
+          code: codeOf('123456'),
+          tapToReveal: true,
+          onCopy: () => copied++,
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.byType(AccountTile));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byType(AccountTile));
+      await tester.pumpAndSettle();
+
+      expect(copied, 1);
+    });
+
+    testWidgets('the code hides again when it changes', (tester) async {
+      // A revealed code must not stay revealed into the next code, or the
+      // setting would quietly stop protecting anything.
+      Widget build(String code) => hostTile(
+        account: account,
+        code: codeOf(code),
+        tapToReveal: true,
+      );
+
+      await tester.pumpWidget(build('111111'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byType(AccountTile));
+      await tester.pumpAndSettle();
+      expect(find.text('111 111'), findsOneWidget);
+
+      await tester.pumpWidget(build('222222'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('222 222'), findsNothing);
+      expect(find.textContaining('•'), findsOneWidget);
+    });
+
+    testWidgets('the hidden code is announced as hidden, not read out', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        hostTile(
+          account: account,
+          code: codeOf('123456'),
+          tapToReveal: true,
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      final label = tester.getSemantics(find.byType(AccountTile)).label;
+      expect(label, contains('hidden'));
+      expect(label, isNot(contains('1 2 3 4 5 6')));
+    });
+
+    testWidgets('with the setting off the code is visible and copies at once', (
+      tester,
+    ) async {
+      var copied = 0;
+      await tester.pumpWidget(
+        hostTile(
+          account: account,
+          code: codeOf('123456'),
+          onCopy: () => copied++,
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.text('123 456'), findsOneWidget);
+      await tester.tap(find.byType(AccountTile));
+      await tester.pumpAndSettle();
+      expect(copied, 1, reason: 'no reveal step when the setting is off');
+    });
+  });
+
   group('code grouping reaches the tile', () {
     final account = Account(id: 'a1', accountName: 'ada', issuer: 'GitHub');
 

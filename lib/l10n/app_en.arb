@@ -709,5 +709,9 @@
         "example": "12"
       }
     }
+  },
+  "revealCodeHint": "Tap to show the code",
+  "@revealCodeHint": {
+    "description": "Screen-reader hint for a hidden code, where the first tap reveals rather than copies."
   }
 }
