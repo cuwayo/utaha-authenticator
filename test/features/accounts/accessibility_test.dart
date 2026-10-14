@@ -274,19 +274,12 @@ void main() {
       issuer: 'GitHub',
     );
 
-    AccountCode codeOf(String value) => AccountCode(
-      code: value,
-      secondsRemaining: 20,
-      progress: 0.3,
-    );
+    AccountCode codeOf(String value) =>
+        AccountCode(code: value, secondsRemaining: 20, progress: 0.3);
 
     testWidgets('the digits are not rendered while hidden', (tester) async {
       await tester.pumpWidget(
-        hostTile(
-          account: account,
-          code: codeOf('123456'),
-          tapToReveal: true,
-        ),
+        hostTile(account: account, code: codeOf('123456'), tapToReveal: true),
       );
       await tester.pumpAndSettle();
 
@@ -298,11 +291,7 @@ void main() {
 
     testWidgets('a placeholder is shown instead', (tester) async {
       await tester.pumpWidget(
-        hostTile(
-          account: account,
-          code: codeOf('123456'),
-          tapToReveal: true,
-        ),
+        hostTile(account: account, code: codeOf('123456'), tapToReveal: true),
       );
       await tester.pumpAndSettle();
 
@@ -311,7 +300,11 @@ void main() {
 
     testWidgets('the placeholder matches the digit count', (tester) async {
       // So the row does not change width when revealed.
-      for (final entry in <String, int>{'123456': 6, '1234567': 7, '12345678': 8}.entries) {
+      for (final entry in <String, int>{
+        '123456': 6,
+        '1234567': 7,
+        '12345678': 8,
+      }.entries) {
         await tester.pumpWidget(
           hostTile(
             account: account,
@@ -370,11 +363,8 @@ void main() {
     testWidgets('the code hides again when it changes', (tester) async {
       // A revealed code must not stay revealed into the next code, or the
       // setting would quietly stop protecting anything.
-      Widget build(String code) => hostTile(
-        account: account,
-        code: codeOf(code),
-        tapToReveal: true,
-      );
+      Widget build(String code) =>
+          hostTile(account: account, code: codeOf(code), tapToReveal: true);
 
       await tester.pumpWidget(build('111111'));
       await tester.pumpAndSettle();
@@ -393,11 +383,7 @@ void main() {
       tester,
     ) async {
       await tester.pumpWidget(
-        hostTile(
-          account: account,
-          code: codeOf('123456'),
-          tapToReveal: true,
-        ),
+        hostTile(account: account, code: codeOf('123456'), tapToReveal: true),
       );
       await tester.pumpAndSettle();
 
