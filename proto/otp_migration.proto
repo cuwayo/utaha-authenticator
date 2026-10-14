@@ -1,0 +1,64 @@
+// Protocol Buffers definition of Google Authenticator's bulk-export payload.
+//
+// This is the schema behind `otpauth-migration://offline?data=...` URIs, which
+// Google Authenticator produces when you use "Transfer accounts > Export
+// accounts". It is an *unofficial* reconstruction: Google has never published
+// it. It is reproduced here so the wire format our parser targets is written
+// down in one place, and so `protoc` can be used to generate ground-truth test
+// vectors.
+//
+// Field numbers and enum values are verified against three independent
+// reconstructions and against Google's own issue tracker:
+//   https://github.com/google/google-authenticator-android/issues/118
+//
+// Two details are easy to get wrong:
+//   * `digits` is an enum (DigitCount), NOT an integer.
+//   * `type` is an enum where HOTP=1 and TOTP=2 — note the order.
+//
+// Syntax note: proto2 and proto3 have identical wire encoding for the fields
+// used here, so proto3 is used for readability. Every scalar is treated as
+// present-by-default, and the parser rejects semantically absent values (such
+// as an empty secret or an UNSPECIFIED enum) rather than silently defaulting.
+
+syntax = "proto3";
+
+message MigrationPayload {
+  enum Algorithm {
+    ALGORITHM_TYPE_UNSPECIFIED = 0;
+    SHA1 = 1;
+    SHA256 = 2;
+    SHA512 = 3;
+    MD5 = 4;
+  }
+
+  enum DigitCount {
+    DIGIT_COUNT_UNSPECIFIED = 0;
+    SIX = 1;
+    EIGHT = 2;
+  }
+
+  enum OtpType {
+    OTP_TYPE_UNSPECIFIED = 0;
+    HOTP = 1;
+    TOTP = 2;
+  }
+
+  message OtpParameters {
+    // Raw secret key bytes, NOT Base32 text.
+    bytes secret = 1;
+    // Display name. May be "Issuer:Account" when the issuer is embedded.
+    string name = 2;
+    // Service name, when exported separately from the name.
+    string issuer = 3;
+    Algorithm algorithm = 4;
+    DigitCount digits = 5;
+    OtpType type = 6;
+    int64 counter = 7;
+  }
+
+  repeated OtpParameters otp_parameters = 1;
+  int32 version = 2;
+  int32 batch_size = 3;
+  int32 batch_index = 4;
+  int32 batch_id = 5;
+}

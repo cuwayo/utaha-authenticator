@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  The launch window, shown while the Flutter engine starts.
+
+  A plain brand-tinted background with the app mark centred. It deliberately
+  carries no text: a splash that says something is a splash the user has to
+  read, and this one is only on screen for a few hundred milliseconds.
+-->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:drawable="@color/splash_background" />
+
+    <item>
+        <bitmap
+            android:gravity="center"
+            android:src="@mipmap/ic_launcher" />
+    </item>
+</layer-list>

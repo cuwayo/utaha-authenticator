@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  The adaptive foreground layer.
+
+  The artwork itself is carried by the background layer, which is a full-bleed
+  raster. This layer exists only because <adaptive-icon> requires a foreground,
+  and it is fully transparent so nothing is drawn over the art.
+
+  It contains a real (transparent) <path> rather than being an empty <vector>.
+  An empty vector can fail to inflate on some launchers, which makes them fall
+  back to Android's built-in default icon — a teal circle with a white robot —
+  instead of showing the app's own icon.
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M0,0h108v108h-108z" />
+</vector>

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Backup and device-transfer rules.
+
+  OTP secrets must never leave the device through Android's own backup system,
+  so both cloud backup and device-to-device transfer are denied outright. The
+  app's own encrypted .utaha export is the only supported way to move accounts,
+  and it is always encrypted with a passphrase the user chooses.
+
+  `allowBackup="false"` in the manifest is the primary switch; these rules are
+  the explicit belt-and-braces declaration for Android 12+, where the platform
+  otherwise applies its own defaults.
+-->
+<data-extraction-rules>
+    <cloud-backup>
+        <exclude domain="root" />
+        <exclude domain="file" />
+        <exclude domain="database" />
+        <exclude domain="sharedpref" />
+        <exclude domain="external" />
+    </cloud-backup>
+    <device-transfer>
+        <exclude domain="root" />
+        <exclude domain="file" />
+        <exclude domain="database" />
+        <exclude domain="sharedpref" />
+        <exclude domain="external" />
+    </device-transfer>
+</data-extraction-rules>

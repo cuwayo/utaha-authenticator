@@ -1,0 +1,39 @@
+# Test vectors for the Google Authenticator migration parser.
+#
+# GENERATED FILE — do not edit by hand.
+# Regenerate with: python3 tool/generate_migration_vectors.py
+#
+# Each value is a base64 protobuf MigrationPayload, exactly as Google
+# Authenticator embeds it in otpauth-migration://offline?data=<value>.
+
+# A single SHA1/TOTP/6-digit account — the common case.
+single_totp_sha1: >-
+  CjIKCkhlbGxvId6tvu8SFkdpdEh1YjphZGFAZXhhbXBsZS5jb20aBkdpdEh1YiABKAEwAhABGAEo0oXYzAQ=
+
+# Two accounts in one payload: SHA1/6-digit and SHA256/8-digit.
+two_accounts: >-
+  CjIKCkhlbGxvId6tvu8SFkdpdEh1YjphZGFAZXhhbXBsZS5jb20aBkdpdEh1YiABKAEwAgo0CgpIZWxsbyHerb7vEhhHaXRMYWI6Z3JhY2VAZXhhbXBsZS5jb20aBkdpdExhYiACKAIwAhABGAIo0oXYzAQ=
+
+# A counter-based (HOTP) account carrying a counter.
+hotp_with_counter: >-
+  Ch8KCkhlbGxvId6tvu8SA2FkYRoEQmFuayABKAEwATgqEAEYASjShdjMBA==
+
+# SHA512 with 8 digits.
+sha512_eight_digits: >-
+  Ch0KCkhlbGxvId6tvu8SA2FkYRoEQWNtZSADKAIwAhABGAEo0oXYzAQ=
+
+# No issuer field; the name carries 'Issuer:Account'.
+name_only_no_issuer: >-
+  CioKCkhlbGxvId6tvu8SFkdpdEh1YjphZGFAZXhhbXBsZS5jb20gASgBMAIQARgBKNKF2MwE
+
+# An entry with an empty secret — must be rejected, not imported blank.
+blank_secret: >-
+  ChMSA2FkYRoGR2l0SHViIAEoATACEAEYASjShdjMBA==
+
+# An entry whose enums are all UNSPECIFIED — must be rejected.
+unspecified_enums: >-
+  ChkKCkhlbGxvId6tvu8SA2FkYRoGR2l0SHViEAEYASjShdjMBA==
+
+# MD5, which this app does not support — must be rejected per-account.
+unknown_algorithm_md5: >-
+  Ch8KCkhlbGxvId6tvu8SA2FkYRoGTGVnYWN5IAQoATACEAEYASjShdjMBA==

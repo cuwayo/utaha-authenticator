@@ -1,0 +1,25 @@
+include: package:very_good_analysis/analysis_options.yaml
+
+analyzer:
+  exclude:
+    - "**/*.g.dart"
+    - "**/*.freezed.dart"
+    - "lib/l10n/generated/**"
+    - build/**
+    - android/**
+    - ios/**
+  language:
+    strict-casts: true
+    strict-inference: true
+    strict-raw-types: true
+  errors:
+    # Generated Riverpod / Drift code trips this; it is not actionable in our source.
+    invalid_annotation_target: ignore
+
+linter:
+  rules:
+    # Public APIs in this project are documented where it adds value, but a hard
+    # requirement on every public member produces noise in generated-heavy code.
+    public_member_api_docs: false
+    # Long doc comments and const tables read better unwrapped.
+    lines_longer_than_80_chars: false

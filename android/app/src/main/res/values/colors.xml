@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Colours used before Flutter draws its first frame.
+
+  `splash_background` is a light tint of the brand seed violet (#5B3FA6). It is
+  defined here rather than referenced from the Flutter theme because the launch
+  window is drawn by Android, before any Dart code runs.
+-->
+<resources>
+    <color name="splash_background">#EFE9F7</color>
+    <color name="splash_background_dark">#141018</color>
+</resources>

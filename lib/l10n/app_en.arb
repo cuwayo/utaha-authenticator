@@ -1,0 +1,713 @@
+{
+  "@@locale": "en",
+  "appTitle": "Utaha Authenticator",
+  "@appTitle": {
+    "description": "Application name shown in the app bar and task switcher."
+  },
+  "appTagline": "Your codes, private and offline",
+  "@appTagline": {
+    "description": "Short subtitle used on the splash and about screens."
+  },
+  "navAccounts": "Codes",
+  "@navAccounts": {
+    "description": "Navigation bar label for the account list."
+  },
+  "navSettings": "Settings",
+  "@navSettings": {
+    "description": "Navigation bar label for the settings screen."
+  },
+  "actionCancel": "Cancel",
+  "@actionCancel": {},
+  "actionSave": "Save",
+  "@actionSave": {},
+  "actionDelete": "Delete",
+  "@actionDelete": {},
+  "actionUndo": "Undo",
+  "@actionUndo": {},
+  "actionRetry": "Try again",
+  "@actionRetry": {},
+  "actionContinue": "Continue",
+  "@actionContinue": {},
+  "actionSkip": "Skip",
+  "@actionSkip": {},
+  "actionNext": "Next",
+  "@actionNext": {},
+  "actionDone": "Done",
+  "@actionDone": {},
+  "actionClose": "Close",
+  "@actionClose": {},
+  "emptyAccountsTitle": "No codes yet",
+  "@emptyAccountsTitle": {
+    "description": "Heading shown when the user has no accounts."
+  },
+  "emptyAccountsBody": "Add your first account by scanning a QR code from the website you want to protect.",
+  "@emptyAccountsBody": {
+    "description": "Supporting text for the empty account list."
+  },
+  "emptySearchTitle": "Nothing matches",
+  "@emptySearchTitle": {
+    "description": "Heading shown when a search returns no results."
+  },
+  "emptySearchBody": "Try a different name, or clear the search to see everything.",
+  "@emptySearchBody": {},
+  "copyCodeTooltip": "Copy code",
+  "@copyCodeTooltip": {
+    "description": "Tooltip on the button that copies an OTP code."
+  },
+  "copiedToClipboard": "Code copied. It will clear in {seconds} seconds.",
+  "@copiedToClipboard": {
+    "description": "Snackbar shown after copying a code.",
+    "placeholders": {
+      "seconds": {
+        "type": "int",
+        "example": "30"
+      }
+    }
+  },
+  "codeHidden": "Code hidden",
+  "@codeHidden": {
+    "description": "Shown in place of a code when tap-to-reveal is on and the code is masked."
+  },
+  "codeCopiedA11y": "Code copied",
+  "@codeCopiedA11y": {
+    "description": "Screen-reader announcement after copying."
+  },
+  "errorGenericTitle": "Something went wrong",
+  "@errorGenericTitle": {},
+  "errorGenericBody": "Please try again. If it keeps happening, restarting the app usually helps.",
+  "@errorGenericBody": {},
+  "settingsAppearance": "Appearance",
+  "@settingsAppearance": {
+    "description": "Section heading for theme settings."
+  },
+  "themeSystem": "System",
+  "@themeSystem": {},
+  "themeLight": "Light",
+  "@themeLight": {},
+  "themeDark": "Dark",
+  "@themeDark": {},
+  "settingsDynamicColor": "Use wallpaper colours",
+  "@settingsDynamicColor": {},
+  "settingsDynamicColorBody": "Match your home screen wallpaper. Available on Android 12 and later.",
+  "@settingsDynamicColorBody": {},
+  "settingsAmoled": "True black",
+  "@settingsAmoled": {
+    "description": "Label for the AMOLED dark theme toggle."
+  },
+  "settingsAmoledBody": "Use pure black backgrounds in dark mode. Saves power on OLED screens.",
+  "@settingsAmoledBody": {},
+  "settingsSeedColor": "Accent colour",
+  "@settingsSeedColor": {},
+  "settingsSeedColorUnavailable": "Turn off wallpaper colours to choose an accent.",
+  "@settingsSeedColorUnavailable": {},
+  "settingsCodes": "Codes",
+  "@settingsCodes": {},
+  "settingsTapToReveal": "Hide codes until tapped",
+  "@settingsTapToReveal": {},
+  "settingsTapToRevealBody": "Keeps codes covered so nobody can read them over your shoulder.",
+  "@settingsTapToRevealBody": {},
+  "settingsCodeGrouping": "Digit grouping",
+  "@settingsCodeGrouping": {},
+  "settingsClipboardClear": "Clear copied codes after",
+  "@settingsClipboardClear": {},
+  "settingsClipboardNever": "Never",
+  "@settingsClipboardNever": {},
+  "settingsSecondsShort": "{seconds}s",
+  "@settingsSecondsShort": {
+    "placeholders": {
+      "seconds": {
+        "type": "int",
+        "example": "30"
+      }
+    }
+  },
+  "settingsDensity": "List spacing",
+  "@settingsDensity": {},
+  "settingsDensityComfortable": "Comfortable",
+  "@settingsDensityComfortable": {},
+  "settingsDensityCompact": "Compact",
+  "@settingsDensityCompact": {},
+  "settingsAbout": "About",
+  "@settingsAbout": {
+    "description": "Section heading that contains the About entry."
+  },
+  "aboutTitle": "About",
+  "@aboutTitle": {},
+  "aboutVersion": "Version {version}",
+  "@aboutVersion": {
+    "placeholders": {
+      "version": {
+        "type": "String",
+        "example": "1.0.0"
+      }
+    }
+  },
+  "aboutLicense": "License",
+  "@aboutLicense": {},
+  "aboutSourceCode": "Source code",
+  "@aboutSourceCode": {},
+  "aboutViewLicenses": "Open-source licenses",
+  "@aboutViewLicenses": {},
+  "aboutWebsite": "Website",
+  "@aboutWebsite": {},
+  "aboutOffline": "This app never connects to the internet. Your codes stay on this device.",
+  "@aboutOffline": {},
+  "actionSearch": "Search",
+  "@actionSearch": {
+    "description": "Tooltip on the search button."
+  },
+  "actionClear": "Clear",
+  "@actionClear": {
+    "description": "Tooltip on the button that clears the search field."
+  },
+  "actionPin": "Pin to top",
+  "@actionPin": {
+    "description": "Menu item that pins an account."
+  },
+  "actionUnpin": "Remove from top",
+  "@actionUnpin": {
+    "description": "Menu item that unpins an account."
+  },
+  "actionNextCode": "Next code",
+  "@actionNextCode": {
+    "description": "Tooltip on the button that advances a counter-based code."
+  },
+  "addAccount": "Add account",
+  "@addAccount": {
+    "description": "Label on the button that starts the add-account flow."
+  },
+  "addByScanning": "Scan a QR code",
+  "@addByScanning": {
+    "description": "Add-account option: use the camera."
+  },
+  "addManually": "Enter a key manually",
+  "@addManually": {
+    "description": "Add-account option: type the details."
+  },
+  "searchAccountsHint": "Search accounts",
+  "@searchAccountsHint": {
+    "description": "Placeholder in the account search field."
+  },
+  "accountMissingSecret": "Key missing — re-add this account",
+  "@accountMissingSecret": {
+    "description": "Shown when an account's secret is no longer in the device keystore."
+  },
+  "codeCopiedNoClear": "Code copied.",
+  "@codeCopiedNoClear": {
+    "description": "Snackbar shown when auto-clear is switched off."
+  },
+  "accountRemoved": "{name} removed",
+  "@accountRemoved": {
+    "description": "Snackbar shown after removing an account, with an undo action.",
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "GitHub"
+      }
+    }
+  },
+  "nextCodeIs": "Next code: {code}",
+  "@nextCodeIs": {
+    "description": "Snackbar shown after advancing a counter-based code.",
+    "placeholders": {
+      "code": {
+        "type": "String",
+        "example": "123456"
+      }
+    }
+  },
+  "actionEdit": "Edit",
+  "@actionEdit": {
+    "description": "Menu item that opens the edit form."
+  },
+  "actionReveal": "Show",
+  "@actionReveal": {
+    "description": "Tooltip on the button that reveals a hidden secret."
+  },
+  "actionHide": "Hide",
+  "@actionHide": {
+    "description": "Tooltip on the button that hides a secret again."
+  },
+  "scanTitle": "Scan a code",
+  "@scanTitle": {
+    "description": "Title of the QR scanning screen."
+  },
+  "scanCameraUnavailable": "The camera could not be started. Check that this app is allowed to use the camera, then try again.",
+  "@scanCameraUnavailable": {
+    "description": "Shown when the camera cannot be opened."
+  },
+  "addByScanningHelp": "Point the camera at the QR code on the website",
+  "@addByScanningHelp": {
+    "description": "Subtitle for the scan option."
+  },
+  "addFromImage": "Choose a picture",
+  "@addFromImage": {
+    "description": "Add-account option: pick a screenshot containing a QR code."
+  },
+  "addFromImageHelp": "Pick a saved image that contains the QR code",
+  "@addFromImageHelp": {
+    "description": "Subtitle for the image option."
+  },
+  "addManuallyHelp": "Type in the key your service gave you",
+  "@addManuallyHelp": {
+    "description": "Subtitle for the manual option."
+  },
+  "addFailedTitle": "Could not add that account",
+  "@addFailedTitle": {
+    "description": "Title of the dialog shown when adding fails."
+  },
+  "accountAdded": "{name} added",
+  "@accountAdded": {
+    "description": "Confirmation shown after an account is added.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "duplicateTitle": "Already added",
+  "@duplicateTitle": {
+    "description": "Title of the duplicate-account dialog."
+  },
+  "duplicateBody": "{name} is already in your list.",
+  "@duplicateBody": {
+    "description": "Body of the duplicate-account dialog.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "duplicateAddAnyway": "Add anyway",
+  "@duplicateAddAnyway": {
+    "description": "Button that adds a duplicate account on purpose."
+  },
+  "imagePickFailed": "That picture could not be opened. Please choose another one.",
+  "@imagePickFailed": {
+    "description": "Shown when the picked image cannot be read."
+  },
+  "imageNoCodeFound": "No authenticator code was found in that picture. Try a clearer screenshot.",
+  "@imageNoCodeFound": {
+    "description": "Shown when an image contains no usable QR code."
+  },
+  "editAccount": "Edit account",
+  "@editAccount": {
+    "description": "Title of the edit form."
+  },
+  "fieldIssuer": "Service",
+  "@fieldIssuer": {
+    "description": "Label for the service name field."
+  },
+  "fieldIssuerHelp": "For example, GitHub",
+  "@fieldIssuerHelp": {
+    "description": "Helper text under the service field."
+  },
+  "fieldAccountName": "Account name",
+  "@fieldAccountName": {
+    "description": "Label for the account name field."
+  },
+  "fieldAccountNameHelp": "For example, your email address",
+  "@fieldAccountNameHelp": {
+    "description": "Helper text under the account name field."
+  },
+  "fieldSecret": "Secret key",
+  "@fieldSecret": {
+    "description": "Label for the secret key field."
+  },
+  "fieldSecretHelp": "The key shown by the service, usually 16 characters or more",
+  "@fieldSecretHelp": {
+    "description": "Helper text under the secret field when adding."
+  },
+  "fieldSecretHelpEditing": "Leave this blank to keep the current key",
+  "@fieldSecretHelpEditing": {
+    "description": "Helper text under the secret field when editing."
+  },
+  "fieldType": "Code type",
+  "@fieldType": {
+    "description": "Label above the TOTP/HOTP selector."
+  },
+  "typeTimeBased": "Time-based",
+  "@typeTimeBased": {
+    "description": "Label for TOTP accounts."
+  },
+  "typeCounterBased": "Counter-based",
+  "@typeCounterBased": {
+    "description": "Label for HOTP accounts."
+  },
+  "fieldAlgorithm": "Algorithm",
+  "@fieldAlgorithm": {
+    "description": "Label above the hash algorithm selector."
+  },
+  "fieldDigits": "Digits",
+  "@fieldDigits": {
+    "description": "Label above the digit count selector."
+  },
+  "fieldPeriod": "Seconds per code",
+  "@fieldPeriod": {
+    "description": "Label for the TOTP period field."
+  },
+  "fieldPeriodHelp": "Most services use 30",
+  "@fieldPeriodHelp": {
+    "description": "Helper text under the period field."
+  },
+  "fieldCounter": "Counter",
+  "@fieldCounter": {
+    "description": "Label for the HOTP counter field."
+  },
+  "fieldCounterHelp": "Ask your service for the current value if you are unsure",
+  "@fieldCounterHelp": {
+    "description": "Helper text under the counter field."
+  },
+  "validationNameRequired": "Please enter a name so you can recognise this account.",
+  "@validationNameRequired": {
+    "description": "Validation message for a missing account name."
+  },
+  "validationSecretRequired": "Please enter the secret key.",
+  "@validationSecretRequired": {
+    "description": "Validation message for a missing secret."
+  },
+  "validationPeriodInvalid": "Please enter a number of seconds greater than zero.",
+  "@validationPeriodInvalid": {
+    "description": "Validation message for a bad period."
+  },
+  "validationCounterInvalid": "Please enter a counter value of zero or more.",
+  "@validationCounterInvalid": {
+    "description": "Validation message for a bad counter."
+  },
+  "backupTitle": "Backup",
+  "@backupTitle": {
+    "description": "Title of the backup screen."
+  },
+  "backupIntro": "Your accounts stay on this device. A backup is the only way to move them somewhere else, and it is always encrypted with a password you choose.",
+  "@backupIntro": {
+    "description": "Introductory paragraph on the backup screen."
+  },
+  "backupExportTitle": "Back up to a file",
+  "@backupExportTitle": {
+    "description": "Heading for the export action."
+  },
+  "backupExportBody": "Creates an encrypted .utaha file you can save or send somewhere safe.",
+  "@backupExportBody": {
+    "description": "Description of the export action."
+  },
+  "backupExportAction": "Back up",
+  "@backupExportAction": {
+    "description": "Button that starts an export."
+  },
+  "backupRestoreTitle": "Restore from a file",
+  "@backupRestoreTitle": {
+    "description": "Heading for the restore action."
+  },
+  "backupRestoreBody": "Opens a .utaha file and adds the accounts inside it.",
+  "@backupRestoreBody": {
+    "description": "Description of the restore action."
+  },
+  "backupRestoreAction": "Restore",
+  "@backupRestoreAction": {
+    "description": "Button that starts a restore."
+  },
+  "backupMigrateTitle": "Import from Google Authenticator",
+  "@backupMigrateTitle": {
+    "description": "Heading for the migration action."
+  },
+  "backupMigrateBody": "Bring your accounts across from Google Authenticator's export code.",
+  "@backupMigrateBody": {
+    "description": "Description of the migration action."
+  },
+  "backupMigrateAction": "Import",
+  "@backupMigrateAction": {
+    "description": "Button that opens the migration flow."
+  },
+  "backupPlainTitle": "Export without encryption",
+  "@backupPlainTitle": {
+    "description": "Heading for the plain-text export, which is deliberately alarming."
+  },
+  "backupPlainBody": "Writes your secret keys as plain text. Anyone who sees the file can generate your codes. Only use this if nothing else works.",
+  "@backupPlainBody": {
+    "description": "Warning description for the plain-text export."
+  },
+  "backupPlainAction": "Export as text",
+  "@backupPlainAction": {
+    "description": "Button for the plain-text export."
+  },
+  "backupPlainWarningTitle": "This file will not be protected",
+  "@backupPlainWarningTitle": {
+    "description": "Title of the warning dialog before a plain-text export."
+  },
+  "backupPlainWarningBody": "The file will contain every secret key in readable text. Anyone who opens it can generate your codes, and it cannot be protected by a password. Continue?",
+  "@backupPlainWarningBody": {
+    "description": "Body of the warning dialog before a plain-text export."
+  },
+  "backupPlainConfirm": "I understand",
+  "@backupPlainConfirm": {
+    "description": "Button that acknowledges the plain-text warning."
+  },
+  "backupPlainDone": "Plain text export ready.",
+  "@backupPlainDone": {
+    "description": "Confirmation after a plain-text export."
+  },
+  "backupPlainShareSubject": "Utaha Authenticator plain text export",
+  "@backupPlainShareSubject": {
+    "description": "Share sheet subject for the plain-text export."
+  },
+  "backupPassword": "Password",
+  "@backupPassword": {
+    "description": "Label for the backup password field."
+  },
+  "backupPasswordConfirm": "Confirm password",
+  "@backupPasswordConfirm": {
+    "description": "Label for the confirmation field."
+  },
+  "backupPasswordRequired": "Please choose a password.",
+  "@backupPasswordRequired": {
+    "description": "Validation message for an empty backup password."
+  },
+  "backupPasswordMismatch": "The two passwords do not match.",
+  "@backupPasswordMismatch": {
+    "description": "Validation message when the passwords differ."
+  },
+  "backupPasswordBody": "Choose a password to protect this backup. You will need it to restore, and it cannot be recovered if you forget it.",
+  "@backupPasswordBody": {
+    "description": "Explanation shown when asking for an export password."
+  },
+  "backupRestorePasswordBody": "Enter the password you used when this backup was created.",
+  "@backupRestorePasswordBody": {
+    "description": "Explanation shown when asking for a restore password."
+  },
+  "backupEncrypting": "Encrypting your backup…",
+  "@backupEncrypting": {
+    "description": "Progress message during export."
+  },
+  "backupDecrypting": "Decrypting your backup…",
+  "@backupDecrypting": {
+    "description": "Progress message during restore."
+  },
+  "backupExporting": "Preparing your accounts…",
+  "@backupExporting": {
+    "description": "Progress message for the plain-text export."
+  },
+  "backupExportDone": "Backup created.",
+  "@backupExportDone": {
+    "description": "Confirmation after an export."
+  },
+  "backupRestoreDone": "{count, plural, =1{1 account restored.} other{{count} accounts restored.}}",
+  "@backupRestoreDone": {
+    "description": "Confirmation after a restore."
+  },
+  "backupRestoreReplaced": "{count, plural, =1{1 account updated.} other{{count} accounts updated.}}",
+  "@backupRestoreReplaced": {
+    "description": "Confirmation when a restore overwrote existing accounts."
+  },
+  "backupRestoreSkipped": "{count, plural, =1{1 account already existed and was left alone.} other{{count} accounts already existed and were left alone.}}",
+  "@backupRestoreSkipped": {
+    "description": "Confirmation when a restore skipped existing accounts."
+  },
+  "backupRestorePartial": "{count, plural, =1{1 account could not be restored.} other{{count} accounts could not be restored.}}",
+  "@backupRestorePartial": {
+    "description": "Warning when part of a restore failed."
+  },
+  "backupShareSubject": "Utaha Authenticator backup",
+  "@backupShareSubject": {
+    "description": "Share sheet subject for a backup file."
+  },
+  "backupShareFailed": "The file could not be shared. Try again, or check that a file manager is available.",
+  "@backupShareFailed": {
+    "description": "Shown when sharing a backup fails."
+  },
+  "backupPickFailed": "That file could not be opened. Please choose another one.",
+  "@backupPickFailed": {
+    "description": "Shown when a picked file cannot be read."
+  },
+  "migrationTitle": "Import from Google Authenticator",
+  "@migrationTitle": {
+    "description": "Title of the migration screen."
+  },
+  "migrationUsePaste": "Enter the code by hand",
+  "@migrationUsePaste": {
+    "description": "Button that switches to pasting the export code."
+  },
+  "migrationUseCamera": "Use the camera",
+  "@migrationUseCamera": {
+    "description": "Button that switches back to scanning."
+  },
+  "migrationUsePasteInstead": "Scanning a saved image is not available here. Open Google Authenticator, tap Transfer accounts then Export accounts, and copy the code it shows.",
+  "@migrationUsePasteInstead": {
+    "description": "Explains the fallback when image import is unavailable on this screen."
+  },
+  "migrationPasteTitle": "Paste your export code",
+  "@migrationPasteTitle": {
+    "description": "Heading of the paste panel."
+  },
+  "migrationPasteBody": "In Google Authenticator, choose Transfer accounts, then Export accounts, then Copy. Paste the code below.",
+  "@migrationPasteBody": {
+    "description": "Instructions for obtaining the export code."
+  },
+  "migrationPasteLabel": "Export code",
+  "@migrationPasteLabel": {
+    "description": "Label for the paste field."
+  },
+  "migrationImportAction": "Import accounts",
+  "@migrationImportAction": {
+    "description": "Button that imports the pasted code."
+  },
+  "migrationNoAccounts": "That code did not contain any accounts.",
+  "@migrationNoAccounts": {
+    "description": "Shown when an export has no accounts."
+  },
+  "migrationAllSkipped": "None of the accounts in that code could be imported. They may use settings this app does not support.",
+  "@migrationAllSkipped": {
+    "description": "Shown when every entry was skipped."
+  },
+  "migrationPreviewTitle": "{count, plural, =1{1 account found} other{{count} accounts found}}",
+  "@migrationPreviewTitle": {
+    "description": "Title of the preview sheet."
+  },
+  "migrationPreviewBody": "Review what will be added. Your secret keys are never shown.",
+  "@migrationPreviewBody": {
+    "description": "Subtitle of the preview sheet."
+  },
+  "migrationConfirm": "Add these accounts",
+  "@migrationConfirm": {
+    "description": "Confirm button on the preview sheet."
+  },
+  "migrationSkippedTitle": "{count, plural, =1{1 account will be skipped} other{{count} accounts will be skipped}}",
+  "@migrationSkippedTitle": {
+    "description": "Heading for the skipped list."
+  },
+  "migrationMultiPart": "This is code {index} of {total}. You will need to scan the others separately.",
+  "@migrationMultiPart": {
+    "description": "Notice that the export is split across several QR codes."
+  },
+  "migrationImported": "{count, plural, =1{1 account imported.} other{{count} accounts imported.}}",
+  "@migrationImported": {
+    "description": "Confirmation after importing."
+  },
+  "migrationSomeSkipped": "{count, plural, =1{1 account could not be imported.} other{{count} accounts could not be imported.}}",
+  "@migrationSomeSkipped": {
+    "description": "Warning after a partial import."
+  },
+  "settingsData": "Your data",
+  "@settingsData": {
+    "description": "Section heading for backup and restore settings."
+  },
+  "settingsSecurity": "Security",
+  "@settingsSecurity": {
+    "description": "Section heading for lock and privacy settings."
+  },
+  "settingsAppLock": "Require unlock to open",
+  "@settingsAppLock": {
+    "description": "Toggle that enables the app lock."
+  },
+  "settingsAppLockBody": "Ask for your fingerprint, face or device PIN before showing your codes.",
+  "@settingsAppLockBody": {
+    "description": "Explanation under the app-lock toggle."
+  },
+  "settingsLockTimeout": "Ask again after",
+  "@settingsLockTimeout": {
+    "description": "Label above the lock timeout choices."
+  },
+  "settingsLockImmediately": "Immediately",
+  "@settingsLockImmediately": {
+    "description": "Lock timeout choice meaning no grace period."
+  },
+  "settingsLockNow": "Lock now",
+  "@settingsLockNow": {
+    "description": "Button that locks the app immediately."
+  },
+  "settingsBlockScreenshots": "Block screenshots",
+  "@settingsBlockScreenshots": {
+    "description": "Toggle that prevents screen capture."
+  },
+  "settingsBlockScreenshotsBody": "Stops screenshots and screen recording, and hides your codes in the recent-apps list.",
+  "@settingsBlockScreenshotsBody": {
+    "description": "Explanation under the screenshot toggle."
+  },
+  "lockTitleLaunch": "Unlock to see your codes",
+  "@lockTitleLaunch": {
+    "description": "Lock screen heading on a cold start."
+  },
+  "lockTitleTimeout": "Locked again",
+  "@lockTitleTimeout": {
+    "description": "Lock screen heading after the timeout."
+  },
+  "lockTitleManual": "Locked",
+  "@lockTitleManual": {
+    "description": "Lock screen heading after locking manually."
+  },
+  "lockUnlockAction": "Unlock",
+  "@lockUnlockAction": {
+    "description": "Button on the lock screen."
+  },
+  "lockHint": "Your codes stay hidden until you unlock.",
+  "@lockHint": {
+    "description": "Small hint under the unlock button."
+  },
+  "lockPromptReason": "Unlock to see your authenticator codes",
+  "@lockPromptReason": {
+    "description": "Shown by the system in its biometric prompt."
+  },
+  "lockEnableReason": "Confirm it is you so the app lock can be switched on",
+  "@lockEnableReason": {
+    "description": "Shown by the system when enabling the app lock."
+  },
+  "lockUnavailableTitle": "No screen lock on this device",
+  "@lockUnavailableTitle": {
+    "description": "Title of the dialog when the device cannot authenticate."
+  },
+  "lockUnavailableBody": "Set up a fingerprint, face unlock or a screen PIN in your device settings first. Without one, the app lock would shut you out of your own codes.",
+  "@lockUnavailableBody": {
+    "description": "Body of the dialog when the device cannot authenticate."
+  },
+  "onboardingOneTitle": "Your codes stay on this device",
+  "@onboardingOneTitle": {
+    "description": "Onboarding page 1 heading."
+  },
+  "onboardingOneBody": "Utaha never connects to the internet. Your secret keys are kept in your device's secure storage, and nothing is sent anywhere.",
+  "@onboardingOneBody": {
+    "description": "Onboarding page 1 body."
+  },
+  "onboardingTwoTitle": "Add an account in seconds",
+  "@onboardingTwoTitle": {
+    "description": "Onboarding page 2 heading."
+  },
+  "onboardingTwoBody": "Scan the QR code your service shows you, pick it from a screenshot, or type the key in by hand.",
+  "@onboardingTwoBody": {
+    "description": "Onboarding page 2 body."
+  },
+  "onboardingThreeTitle": "Keep a backup somewhere safe",
+  "@onboardingThreeTitle": {
+    "description": "Onboarding page 3 heading."
+  },
+  "onboardingThreeBody": "Export an encrypted file so you can restore your accounts if you lose this device. Only you can open it.",
+  "@onboardingThreeBody": {
+    "description": "Onboarding page 3 body."
+  },
+  "onboardingGetStarted": "Get started",
+  "@onboardingGetStarted": {
+    "description": "Final onboarding button."
+  },
+  "onboardingProgress": "Page {current} of {total}",
+  "@onboardingProgress": {
+    "description": "Announced to screen readers on each onboarding page.",
+    "placeholders": {
+      "current": {
+        "type": "int",
+        "example": "1"
+      },
+      "total": {
+        "type": "int",
+        "example": "3"
+      }
+    }
+  },
+  "secondsRemaining": "{count, plural, =1{1 second left} other{{count} seconds left}}",
+  "@secondsRemaining": {
+    "description": "Announced with a code so a screen-reader user knows when it expires.",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "12"
+      }
+    }
+  }
+}

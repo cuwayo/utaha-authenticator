@@ -1,0 +1,29 @@
+# Release signing configuration.
+#
+# Copy this file to `android/key.properties` and fill it in. That file is
+# gitignored, and so are the keystores it points at — see `android/.gitignore`.
+# Never commit either.
+#
+# Generate a keystore with:
+#
+#   keytool -genkeypair -v \
+#     -keystore ~/utaha-release.jks \
+#     -alias utaha \
+#     -keyalg RSA -keysize 4096 -validity 10000
+#
+# Keep the keystore and its passwords somewhere you will not lose them. Losing
+# the signing key means you cannot publish an update to the same listing, and
+# Google Play will not let you reset it.
+#
+# Then build with:
+#
+#   flutter build appbundle --release
+#
+# If this file is absent, the build falls back to the debug key so that
+# `flutter run --release` still works locally. That fallback must never be used
+# for a published build.
+
+storeFile=/absolute/path/to/utaha-release.jks
+storePassword=changeme
+keyAlias=utaha
+keyPassword=changeme

@@ -1,0 +1,150 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  # Allow a manual run from the Actions tab.
+  workflow_dispatch:
+
+# Cancel a run that is superseded by a newer push to the same branch.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  # Pinned so CI and local builds agree. Update deliberately.
+  FLUTTER_VERSION: '3.47.7'
+
+jobs:
+  analyze-and-test:
+    name: Analyze and test
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Check out
+        uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: stable
+          cache: true
+
+      - name: Resolve dependencies
+        run: flutter pub get
+
+      - name: Generate code
+        # `build_runner` output and the l10n classes are not committed, so they
+        # are produced here. Running this in CI means a stale or missing
+        # regeneration is caught by the build rather than by a confusing
+        # compile error on someone's machine.
+        run: |
+          dart run build_runner build --delete-conflicting-outputs
+          flutter gen-l10n
+
+      - name: Verify formatting
+        # Fails on files that are not `dart format` clean, so style does not
+        # drift. Run `dart format .` locally to fix.
+        run: dart format --output=none --set-exit-if-changed .
+
+      - name: Analyze
+        # The project is expected to be clean; this is not advisory.
+        run: flutter analyze
+
+      - name: Run tests
+        run: flutter test --reporter expanded
+
+  build-android:
+    name: Build Android release
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    needs: analyze-and-test
+
+    steps:
+      - name: Check out
+        uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: stable
+          cache: true
+
+      - name: Resolve dependencies
+        run: flutter pub get
+
+      - name: Generate code
+        # `build_runner` output and the l10n classes are not committed, so they
+        # are produced here. Running this in CI means a stale or missing
+        # regeneration is caught by the build rather than by a confusing
+        # compile error on someone's machine.
+        run: |
+          dart run build_runner build --delete-conflicting-outputs
+          flutter gen-l10n
+
+      - name: Build release APK
+        # A release build is built on every change because the interesting
+        # failures are release-only: R8 stripping code that the framework calls
+        # cannot be caught by analyze or by a debug build.
+        #
+        # The env var is set because CI has no release keystore; the artifact is
+        # a build check, not something to publish.
+        #
+        # `flutter build` rather than `./gradlew` on purpose: calling Gradle
+        # directly skips the step where Flutter compiles plugin Android modules,
+        # which leaves `integration_test` (a dev dependency) unreferenced and
+        # fails the build on GeneratedPluginRegistrant.java.
+        env:
+          UTAHA_ALLOW_DEBUG_SIGNING: 'true'
+        run: flutter build apk --release
+
+      - name: Verify no network permission
+        # The app must ship with no network capability. This fails the build if
+        # a dependency ever reintroduces INTERNET.
+        #
+        # Note the explicit existence check. Without it, a wrong path makes
+        # `aapt2` fail, `grep` find nothing, and the step pass — a green tick on
+        # a check that verified nothing at all.
+        run: |
+          set -euo pipefail
+          APK=build/app/outputs/flutter-apk/app-release.apk
+          if [ ! -f "$APK" ]; then
+            echo "::error::Release APK not found at $APK — cannot verify permissions."
+            exit 1
+          fi
+          AAPT=$(find "$ANDROID_HOME/build-tools" -name aapt2 | sort -V | tail -1)
+          PERMISSIONS=$("$AAPT" dump permissions "$APK")
+          if echo "$PERMISSIONS" | grep -q 'android.permission.INTERNET'; then
+            echo "::error::The release APK requests INTERNET, which this app must never do."
+            exit 1
+          fi
+          # Guard against the check itself silently doing nothing.
+          if ! echo "$PERMISSIONS" | grep -q 'android.permission.CAMERA'; then
+            echo "::error::Expected CAMERA permission not found — the dump looks wrong."
+            exit 1
+          fi
+          echo "Verified: no INTERNET permission, CAMERA present."
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-release-apk
+          path: build/app/outputs/flutter-apk/app-release.apk
+          retention-days: 14
