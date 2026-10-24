@@ -9,7 +9,6 @@ import 'package:utaha_authenticator/data/secure/in_memory_secret_repository.dart
 import 'package:utaha_authenticator/domain/models/account.dart';
 import 'package:utaha_authenticator/domain/otp/otp_algorithm.dart';
 import 'package:utaha_authenticator/domain/otp/otp_type.dart';
-import 'package:utaha_authenticator/domain/repositories/account_repository.dart';
 import 'package:utaha_authenticator/domain/services/account_service.dart';
 
 /// A valid 10-byte secret.
@@ -208,6 +207,39 @@ void main() {
       expect(secrets.peek(account.id), replacement);
     });
 
+    test(
+      'restores the previous secret when metadata persistence fails',
+      () async {
+        final failingAccounts = _FailingAccountRepository(failWrites: false);
+        final failingSecrets = InMemorySecretRepository();
+        final failingService = AccountService(
+          accounts: failingAccounts,
+          secrets: failingSecrets,
+        );
+        final original = _secret();
+        final account = await failingService.add(
+          accountName: 'ada',
+          secret: original,
+        );
+        final replacement = Base32.decode('MZXW6YTBOI');
+        failingAccounts.failWrites = true;
+
+        await expectLater(
+          failingService.update(
+            account.copyWith(accountName: 'grace'),
+            newSecret: replacement,
+          ),
+          throwsA(isA<Exception>()),
+        );
+
+        expect(
+          (await failingAccounts.findById(account.id))!.accountName,
+          'ada',
+        );
+        expect(failingSecrets.peek(account.id), original);
+      },
+    );
+
     test('allows an update with no secret at all', () async {
       // An edit that only renames an account must not require the key again.
       final account = await service.add(accountName: 'ada', secret: _secret());
@@ -381,25 +413,15 @@ void main() {
   });
 }
 
-/// An account repository whose metadata write always fails, for rollback tests.
-class _FailingAccountRepository implements AccountRepository {
+/// An account repository whose metadata writes can fail, for rollback tests.
+class _FailingAccountRepository extends InMemoryAccountRepository {
+  new({this.failWrites = true});
+
+  bool failWrites;
+
   @override
   Future<void> upsert(Account account) async {
-    throw Exception('metadata write failed');
+    if (failWrites) throw Exception('metadata write failed');
+    await super.upsert(account);
   }
-
-  @override
-  Stream<List<Account>> watchAll() => Stream.value(const <Account>[]);
-
-  @override
-  Future<List<Account>> readAll() async => const <Account>[];
-
-  @override
-  Future<Account?> findById(String id) async => null;
-
-  @override
-  Future<void> delete(String id) async {}
-
-  @override
-  Future<void> reorder(List<String> orderedIds) async {}
 }

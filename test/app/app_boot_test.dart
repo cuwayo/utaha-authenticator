@@ -119,6 +119,28 @@ void main() {
     expect(Theme.of(context).scaffoldBackgroundColor, const Color(0xFF000000));
   });
 
+  testWidgets(
+    'stored accent colour reaches the theme when dynamic colour is off',
+    (tester) async {
+      const seedColorValue = 0xFF00695C;
+      await tester.pumpWidget(
+        _bootApp(
+          settings: const AppSettings(
+            useDynamicColor: false,
+            seedColorValue: seedColorValue,
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      final context = tester.element(find.byType(Scaffold).first);
+      final expected = ColorScheme.fromSeed(
+        seedColor: const Color(seedColorValue),
+      );
+      expect(Theme.of(context).colorScheme.primary, expected.primary);
+    },
+  );
+
   testWidgets('toggling a setting persists it through the repository', (
     tester,
   ) async {

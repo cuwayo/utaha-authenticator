@@ -17,8 +17,9 @@ extension ListDensityVisuals on ListDensity {
 /// Builds the application's [ThemeData] for both brightnesses.
 ///
 /// Colour comes from either the device wallpaper (dynamic colour, Android 12+)
-/// or [kSeedColorValue] as a fallback. Typography is tuned so OTP codes render
-/// with tabular figures, which stops digits from jittering as they tick.
+/// or a user-selected seed colour as a fallback. Typography is tuned so OTP
+/// codes render with tabular figures, which stops digits from jittering as they
+/// tick.
 abstract final class AppTheme {
   /// Default corner radius for cards and sheets.
   static const double _radius = 16;
@@ -33,11 +34,13 @@ abstract final class AppTheme {
     ColorScheme? dynamicScheme,
     bool useAmoled = false,
     ListDensity density = ListDensity.comfortable,
+    int seedColorValue = kSeedColorValue,
   }) {
     final scheme = _schemeFor(
       brightness: brightness,
       dynamicScheme: dynamicScheme,
       useAmoled: useAmoled,
+      seedColorValue: seedColorValue,
     );
 
     final base = ThemeData(
@@ -151,6 +154,7 @@ abstract final class AppTheme {
   static ColorScheme _schemeFor({
     required Brightness brightness,
     required bool useAmoled,
+    required int seedColorValue,
     ColorScheme? dynamicScheme,
   }) {
     if (dynamicScheme != null && dynamicScheme.brightness == brightness) {
@@ -162,7 +166,7 @@ abstract final class AppTheme {
     }
 
     final seeded = ColorScheme.fromSeed(
-      seedColor: const Color(kSeedColorValue),
+      seedColor: Color(seedColorValue),
       brightness: brightness,
     );
     return useAmoled && brightness == Brightness.dark

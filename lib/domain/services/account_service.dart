@@ -134,12 +134,26 @@ class AccountService {
       secretRequired: false,
     );
 
-    if (newSecret != null) {
-      // Write the new secret before the metadata, so the account never claims a
-      // key that is not there yet.
-      await _secrets.write(account.id, newSecret);
+    if (newSecret == null) {
+      await _accounts.upsert(account);
+      return;
     }
-    await _accounts.upsert(account);
+
+    // A secret and its metadata live in separate stores. Keep the previous key
+    // until the metadata write succeeds, so an I/O failure cannot pair the old
+    // account details with a replacement secret.
+    final previousSecret = await _secrets.read(account.id);
+    try {
+      await _secrets.write(account.id, newSecret);
+      try {
+        await _accounts.upsert(account);
+      } on Object {
+        await _restoreSecret(account.id, previousSecret);
+        rethrow;
+      }
+    } finally {
+      zero(previousSecret);
+    }
   }
 
   /// Removes an account and its secret.
@@ -227,6 +241,21 @@ class AccountService {
     } on Object {
       // Deliberately ignored: the caller is already handling a failure, and
       // pruneOrphanedSecrets will retry this later.
+    }
+  }
+
+  /// Restores a secret after a failed metadata write, swallowing the
+  /// compensating failure so the original storage error reaches the caller.
+  Future<void> _restoreSecret(String id, Uint8List? previousSecret) async {
+    try {
+      if (previousSecret == null) {
+        await _secrets.delete(id);
+      } else {
+        await _secrets.write(id, previousSecret);
+      }
+    } on Object {
+      // Preserve the original metadata error. The caller can retry the edit if
+      // the compensating write cannot be completed.
     }
   }
 

@@ -32,7 +32,7 @@ class UtahaApp extends ConsumerWidget {
     return DynamicColorBuilder(
       builder: (lightDynamic, darkDynamic) {
         // When the user turns dynamic colour off we pass null, which makes
-        // AppTheme fall back to the seeded violet palette.
+        // AppTheme fall back to the selected accent palette.
         final lightScheme = settings.useDynamicColor ? lightDynamic : null;
         final darkScheme = settings.useDynamicColor ? darkDynamic : null;
 
@@ -49,12 +49,14 @@ class UtahaApp extends ConsumerWidget {
             dynamicScheme: lightScheme,
             useAmoled: settings.useAmoled,
             density: settings.listDensity,
+            seedColorValue: settings.seedColorValue,
           ),
           darkTheme: AppTheme.build(
             brightness: Brightness.dark,
             dynamicScheme: darkScheme,
             useAmoled: settings.useAmoled,
             density: settings.listDensity,
+            seedColorValue: settings.seedColorValue,
           ),
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,

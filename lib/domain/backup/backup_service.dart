@@ -5,6 +5,7 @@ import 'package:utaha_authenticator/core/utils/zeroing.dart';
 import 'package:utaha_authenticator/domain/backup/backup_codec.dart';
 import 'package:utaha_authenticator/domain/backup/backup_format.dart';
 import 'package:utaha_authenticator/domain/backup/backup_payload.dart';
+import 'package:utaha_authenticator/domain/models/account.dart';
 import 'package:utaha_authenticator/domain/otpauth/otpauth_uri.dart';
 import 'package:utaha_authenticator/domain/repositories/account_repository.dart';
 import 'package:utaha_authenticator/domain/repositories/secret_repository.dart';
@@ -155,7 +156,7 @@ class BackupService {
     var added = 0;
     var replaced = 0;
     var skipped = 0;
-    var failed = 0;
+    var failed = payload.skippedEntries;
 
     try {
       for (final entry in payload.accounts) {
@@ -169,18 +170,18 @@ class BackupService {
           }
 
           if (existing == null) {
-            await _accounts.upsert(entry.account);
-            await _secrets.write(entry.account.id, entry.secret);
+            await _restoreNewAccount(entry.account, entry.secret);
             added++;
           } else if (onConflict == ImportConflictResolution.replaced) {
-            await _accounts.upsert(entry.account);
-            await _secrets.write(entry.account.id, entry.secret);
+            await _replaceExistingAccount(entry.account, entry.secret);
             replaced++;
           } else {
             // `added` on conflict: a fresh id so both accounts survive.
             final newId = generateAccountId();
-            await _accounts.upsert(entry.account.copyWith(id: newId));
-            await _secrets.write(newId, entry.secret);
+            await _restoreNewAccount(
+              entry.account.copyWith(id: newId),
+              entry.secret,
+            );
             added++;
           }
         } on Object {
@@ -198,6 +199,58 @@ class BackupService {
       skipped: skipped,
       failed: failed,
     );
+  }
+
+  /// Restores a new account without exposing metadata before its secret exists.
+  Future<void> _restoreNewAccount(Account account, Uint8List secret) async {
+    await _secrets.write(account.id, secret);
+    try {
+      await _accounts.upsert(account);
+    } on Object {
+      await _tryDeleteSecret(account.id);
+      rethrow;
+    }
+  }
+
+  /// Replaces both halves of an existing account, restoring its old secret if
+  /// the metadata write cannot complete.
+  Future<void> _replaceExistingAccount(
+    Account account,
+    Uint8List secret,
+  ) async {
+    final previousSecret = await _secrets.read(account.id);
+    try {
+      await _secrets.write(account.id, secret);
+      try {
+        await _accounts.upsert(account);
+      } on Object {
+        await _restoreSecret(account.id, previousSecret);
+        rethrow;
+      }
+    } finally {
+      zero(previousSecret);
+    }
+  }
+
+  Future<void> _tryDeleteSecret(String id) async {
+    try {
+      await _secrets.delete(id);
+    } on Object {
+      // The entry is counted as failed and the regular orphan sweep can retry.
+    }
+  }
+
+  Future<void> _restoreSecret(String id, Uint8List? previousSecret) async {
+    try {
+      if (previousSecret == null) {
+        await _secrets.delete(id);
+      } else {
+        await _secrets.write(id, previousSecret);
+      }
+    } on Object {
+      // Preserve the restore failure rather than masking it with a failed
+      // compensation. The account remains eligible for a later repair.
+    }
   }
 
   /// Builds an unencrypted list of `otpauth://` URIs for every account.

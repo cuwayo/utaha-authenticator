@@ -6,6 +6,7 @@ import 'package:utaha_authenticator/core/errors/failures.dart';
 import 'package:utaha_authenticator/core/utils/base32.dart';
 import 'package:utaha_authenticator/data/repositories/in_memory_account_repository.dart';
 import 'package:utaha_authenticator/data/secure/in_memory_secret_repository.dart';
+import 'package:utaha_authenticator/domain/backup/backup_codec.dart';
 import 'package:utaha_authenticator/domain/backup/backup_format.dart';
 import 'package:utaha_authenticator/domain/backup/backup_payload.dart';
 import 'package:utaha_authenticator/domain/backup/backup_service.dart';
@@ -212,6 +213,7 @@ void main() {
       final decoded = BackupPayloadCodec.decode(encoded);
       addTearDown(decoded.dispose);
       expect(decoded.accounts, hasLength(1));
+      expect(decoded.skippedEntries, 1);
     });
   });
 
@@ -415,6 +417,98 @@ void main() {
     });
 
     test(
+      'does not create metadata when the restored secret cannot be saved',
+      () async {
+        await accountService.add(
+          accountName: 'ada',
+          secret: Base32.decode(_secret),
+        );
+        final file = await backup.export(password: 'pw');
+        final targetAccounts = InMemoryAccountRepository();
+        final targetSecrets = InMemorySecretRepository()
+          ..writeError = Exception('keystore unavailable');
+        final targetBackup = BackupService(
+          accounts: targetAccounts,
+          secrets: targetSecrets,
+          parameters: _testKdf,
+        );
+
+        final report = await targetBackup.restore(file: file, password: 'pw');
+
+        expect(report.added, 0);
+        expect(report.failed, 1);
+        expect(await targetAccounts.readAll(), isEmpty);
+        expect(await targetSecrets.accountIds(), isEmpty);
+      },
+    );
+
+    test(
+      'keeps an existing account unchanged when replacement metadata fails',
+      () async {
+        final source = await accountService.add(
+          accountName: 'from backup',
+          secret: Base32.decode(_secret),
+        );
+        final file = await backup.export(password: 'pw');
+        final targetAccounts = _FailingAccountRepository(failWrites: false);
+        final targetSecrets = InMemorySecretRepository();
+        final targetService = AccountService(
+          accounts: targetAccounts,
+          secrets: targetSecrets,
+        );
+        final originalSecret = Base32.decode('MZXW6YTBOI');
+        await targetService.add(
+          id: source.id,
+          accountName: 'original',
+          secret: originalSecret,
+        );
+        targetAccounts.failWrites = true;
+        final targetBackup = BackupService(
+          accounts: targetAccounts,
+          secrets: targetSecrets,
+          parameters: _testKdf,
+        );
+
+        final report = await targetBackup.restore(file: file, password: 'pw');
+
+        expect(report.replaced, 0);
+        expect(report.failed, 1);
+        expect(
+          (await targetAccounts.findById(source.id))!.accountName,
+          'original',
+        );
+        expect(targetSecrets.peek(source.id), originalSecret);
+      },
+    );
+
+    test('reports malformed backup entries as failures', () async {
+      final plaintext = Uint8List.fromList(
+        utf8.encode(
+          '{"schema":1,"accounts":['
+          '{"id":"bad","accountName":"bad","secret":"11111111"},'
+          '{"id":"good","accountName":"good","secret":"$_secret"}'
+          ']}',
+        ),
+      );
+      late Uint8List file;
+      try {
+        file = await BackupCodec.encode(
+          plaintext: plaintext,
+          password: 'pw',
+          parameters: _testKdf,
+        );
+      } finally {
+        plaintext.fillRange(0, plaintext.length, 0);
+      }
+
+      final report = await backup.restore(file: file, password: 'pw');
+
+      expect(report.added, 1);
+      expect(report.failed, 1);
+      expect(report.total, 2);
+    });
+
+    test(
       'a corrupted file is rejected without touching existing data',
       () async {
         await seed();
@@ -541,4 +635,17 @@ void main() {
       expect(secrets.peek(restored.id), isNotNull);
     });
   });
+}
+
+/// An account repository whose metadata writes can fail, for restore tests.
+class _FailingAccountRepository extends InMemoryAccountRepository {
+  new({this.failWrites = true});
+
+  bool failWrites;
+
+  @override
+  Future<void> upsert(Account account) async {
+    if (failWrites) throw Exception('metadata write failed');
+    await super.upsert(account);
+  }
 }

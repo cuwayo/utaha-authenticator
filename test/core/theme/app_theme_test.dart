@@ -24,6 +24,19 @@ void main() {
       },
     );
 
+    test('uses the selected seed colour when dynamic colour is absent', () {
+      const seedColorValue = 0xFF00695C;
+      final theme = AppTheme.build(
+        brightness: Brightness.light,
+        seedColorValue: seedColorValue,
+      );
+      final expected = ColorScheme.fromSeed(
+        seedColor: const Color(seedColorValue),
+      );
+
+      expect(theme.colorScheme.primary, expected.primary);
+    });
+
     test('produces a dark scheme when asked', () {
       final theme = AppTheme.build(brightness: Brightness.dark);
       expect(theme.colorScheme.brightness, Brightness.dark);

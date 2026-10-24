@@ -32,10 +32,18 @@ class BackupAccount {
 /// The decoded contents of a backup file.
 class BackupPayload {
   /// Creates a payload.
-  new({required this.accounts, this.createdAt, this.appVersion});
+  new({
+    required this.accounts,
+    this.skippedEntries = 0,
+    this.createdAt,
+    this.appVersion,
+  });
 
   /// The accounts in the backup.
   final List<BackupAccount> accounts;
+
+  /// Entries in the encrypted body that could not be decoded.
+  final int skippedEntries;
 
   /// When the backup was written, when recorded.
   final DateTime? createdAt;
@@ -137,14 +145,23 @@ abstract final class BackupPayloadCodec {
     }
 
     final accounts = <BackupAccount>[];
+    var skippedEntries = 0;
     for (final raw in rawAccounts) {
-      if (raw is! Map) continue;
+      if (raw is! Map) {
+        skippedEntries++;
+        continue;
+      }
       final entry = _decodeAccount(raw.cast<String, Object?>());
-      if (entry != null) accounts.add(entry);
+      if (entry == null) {
+        skippedEntries++;
+      } else {
+        accounts.add(entry);
+      }
     }
 
     return BackupPayload(
       accounts: accounts,
+      skippedEntries: skippedEntries,
       createdAt: _parseDate(decoded['createdAt']),
       appVersion: decoded['appVersion'] as String?,
     );
